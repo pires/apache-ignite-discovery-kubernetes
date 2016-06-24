@@ -1,0 +1,80 @@
+:sectnums:
+:numbered:
+:toc: macro
+:toc-title:
+:toclevels: 99
+
+# apache-ignite-discovery-kubernetes
+
+Apache Ignite discovery for Kubernetes.
+
+toc::[]
+
+## Requirements
+
+* Kubernetes cluster with DNS integration enabled
+
+If you want to build the plug-in yourself, you'll need:
+
+* Java compiler able to compile Java 7 code
+* Maven 3.3.x or newer
+
+## Usage
+
+First, declare the following in your project's `pom.xml`:
+```xml
+<dependency>
+    <groupId>com.github.pires</groupId>
+    <artifactId>apache-ignite-discovery-kubernetes</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+Now, let's configure Apache Ignite discovery:
+
+### XML
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+
+        <!-- other properties -->
+
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="com.github.pires.ignite.kubernetes.KubernetesPodIpFinder">
+                        <property name="serviceName" value="YOUR_SERVICE_NAME"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+
+        <!-- other properties -->
+        
+    </bean>
+</beans>
+```
+
+### Java
+
+```java
+// ...
+
+final KubernetesPodIpFinder podIpFinder = new KubernetesPodIpFinder();
+podIpFinder.setServiceName(serviceName);
+
+final TcpDiscoverySpi discovery = new TcpDiscoverySpi();
+discovery.setIpFinder(podIpFinder);
+
+final IgniteConfiguration igniteConfig = new IgniteConfiguration();
+igniteConfig.setDiscoverySpi(discovery);
+
+Ignition.start(igniteConfig);
+// ...
+```
