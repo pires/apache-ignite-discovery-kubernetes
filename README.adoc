@@ -76,5 +76,6 @@ final IgniteConfiguration igniteConfig = new IgniteConfiguration();
 igniteConfig.setDiscoverySpi(discovery);
 
 Ignition.start(igniteConfig);
+
 // ...
 ```
