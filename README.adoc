@@ -49,6 +49,8 @@ Now, let's configure Apache Ignite discovery:
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
                 <property name="ipFinder">
                     <bean class="com.github.pires.ignite.kubernetes.KubernetesPodIpFinder">
+                        <!-- Headless service name that exposes Ignite cluster, embedded or not. -->
+                        <!-- See http://kubernetes.io/docs/user-guide/services/#headless-services -->
                         <property name="serviceName" value="YOUR_SERVICE_NAME"/>
                     </bean>
                 </property>
@@ -65,6 +67,10 @@ Now, let's configure Apache Ignite discovery:
 
 ```java
 // ...
+
+// Headless service name that exposes Ignite cluster, embedded or not.
+// See http://kubernetes.io/docs/user-guide/services/#headless-services
+final String serviceName = "MY_APP_SVC";
 
 final KubernetesPodIpFinder podIpFinder = new KubernetesPodIpFinder();
 podIpFinder.setServiceName(serviceName);
