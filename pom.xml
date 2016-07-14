@@ -10,7 +10,7 @@
 
     <groupId>com.github.pires</groupId>
     <artifactId>apache-ignite-discovery-kubernetes</artifactId>
-    <version>1.0_1</version>
+    <version>1.1-SNAPSHOT</version>
 
     <name>Apache Ignite Discovery (Kubernetes)</name>
 
