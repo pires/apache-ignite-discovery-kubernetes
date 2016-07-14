@@ -26,7 +26,7 @@ First, declare the following in your project's `pom.xml`:
 <dependency>
     <groupId>com.github.pires</groupId>
     <artifactId>apache-ignite-discovery-kubernetes</artifactId>
-    <version>1.0</version>
+    <version>1.0_1</version>
 </dependency>
 ```
 
