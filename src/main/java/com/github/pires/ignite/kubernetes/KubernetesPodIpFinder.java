@@ -35,6 +35,9 @@ public class KubernetesPodIpFinder extends TcpDiscoveryVmIpFinder {
     private IgniteLogger log;
 
     @GridToStringInclude
+    private String containerPortName;
+
+    @GridToStringInclude
     private String serviceName;
 
     public KubernetesPodIpFinder() {
@@ -46,7 +49,18 @@ public class KubernetesPodIpFinder extends TcpDiscoveryVmIpFinder {
     }
 
     /**
-     * Parses provided service lookup name.
+     * Parses provided container port name.
+     *
+     * @param containerPortName the container port name to use in lookup queries.
+     * @throws IgniteSpiException
+     */
+    @IgniteSpiConfiguration(optional = true)
+    public synchronized void setContainerPortName(String containerPortName) throws IgniteSpiException {
+        this.containerPortName = containerPortName;
+    }
+
+    /**
+     * Parses provided service name.
      *
      * @param serviceName the service name to use in lookup queries.
      * @throws IgniteSpiException
@@ -63,14 +77,14 @@ public class KubernetesPodIpFinder extends TcpDiscoveryVmIpFinder {
     public synchronized Collection<InetSocketAddress> getRegisteredAddresses() {
         // provision DNS resolver for usage with SRV records
         final DnsSrvResolver resolver = DnsSrvResolvers.newBuilder()
-                .cachingLookups(true)
                 .retainingDataOnFailures(true)
                 .dnsLookupTimeoutMillis(DNS_LOOKUP_TIMEOUT_MILLIS)
                 .build();
         // resolve configured addresses
         final Collection<InetSocketAddress> inets = new CopyOnWriteArrayList<>();
-        log.debug("Looking up SRV records for service [" + serviceName + "].");
-        final List<LookupResult> nodes = resolver.resolve(serviceName);
+        final String fqdn = "_" + containerPortName + "._tcp." + serviceName;
+        log.debug("Looking up SRV records with FQDN [" + fqdn + "].");
+        final List<LookupResult> nodes = resolver.resolve(fqdn);
         for (LookupResult node : nodes) {
             inets.add(InetSocketAddress.createUnresolved(node.host(), node.port()));
         }

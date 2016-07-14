@@ -30,7 +30,23 @@ First, declare the following in your project's `pom.xml`:
 </dependency>
 ```
 
-Now, let's configure Apache Ignite discovery:
+Now, let's configure Apache Ignite discovery based on the following service descriptor:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: MY-SERVICE
+  labels:
+    component: my-svc
+spec:
+  selector:
+    component: my-svc
+  clusterIP: None
+  ports:
+  - name: MY-CONTAINER-PORT
+    port: 47500
+    protocol: TCP
+```
 
 ### XML
 
@@ -51,7 +67,8 @@ Now, let's configure Apache Ignite discovery:
                     <bean class="com.github.pires.ignite.kubernetes.KubernetesPodIpFinder">
                         <!-- Headless service name that exposes Ignite cluster, embedded or not. -->
                         <!-- See http://kubernetes.io/docs/user-guide/services/#headless-services -->
-                        <property name="serviceName" value="YOUR_SERVICE_NAME"/>
+                        <property name="serviceName" value="MY-SERVICE"/>
+                        <property name="containerPortName" value="MY-CONTAINER-PORT"/>
                     </bean>
                 </property>
             </bean>
@@ -70,9 +87,11 @@ Now, let's configure Apache Ignite discovery:
 
 // Headless service name that exposes Ignite cluster, embedded or not.
 // See http://kubernetes.io/docs/user-guide/services/#headless-services
-final String serviceName = "MY_APP_SVC";
+final String serviceName = "MY-SERVICE";
+final String containerPortName = "MY-CONTAINER-PORT";
 
 final KubernetesPodIpFinder podIpFinder = new KubernetesPodIpFinder();
+podIpFinder.setContainerPortName(containerPortName);
 podIpFinder.setServiceName(serviceName);
 
 final TcpDiscoverySpi discovery = new TcpDiscoverySpi();
